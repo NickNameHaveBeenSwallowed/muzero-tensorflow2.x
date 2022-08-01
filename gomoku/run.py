@@ -1,5 +1,5 @@
 from self_play import play_game
-from convolution_network import conv_model
+from convolution_model import model
 from trainer import Trainer
 
 NUM_CHESS = 8
@@ -15,7 +15,7 @@ BATCH_SIZE = 128
 if __name__ == '__main__':
     import time
     t = time.time()
-    model = conv_model(OBSERVATION_SHAPE, HIDDEN_STATE_CHANNEL, NUM_CHESS)
+    model = model(OBSERVATION_SHAPE, HIDDEN_STATE_CHANNEL, NUM_CHESS)
     # model.load_weights("./model/gomoku_{}X{}".format(NUM_CHESS, NUM_CHESS))
     trainer = Trainer()
 
