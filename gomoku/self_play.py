@@ -36,7 +36,7 @@ class play_game:
     def run(self):
         trajectory = []
         state, winner = self.env.reset()
-        state = np.reshape(state, newshape=(self.num_chess, self.num_chess, 3))
+        state = np.transpose(state, (1, 2, 0))
         if self.render:
             self.env.render()
         for step in range(self.max_step):
@@ -46,7 +46,8 @@ class play_game:
             state, winner = self.env.step(action)
             if self.render:
                 self.env.render()
-            state = np.reshape(state, newshape=(self.num_chess, self.num_chess, 3))
+            state = np.transpose(state, (1, 2, 0))
+
             if winner is not None:
                 break
 
