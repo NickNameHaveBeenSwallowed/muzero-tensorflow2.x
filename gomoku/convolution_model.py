@@ -87,7 +87,7 @@ class prediction:
         value = np.array(value[0][0])
         return policy, value
 
-class conv_model:
+class model:
     def __init__(self, observation_shape, hidden_state_channel, num_chess):
         self.representation = representation(observation_shape, hidden_state_channel)
         hidden_state_shape = (observation_shape[0], observation_shape[1], hidden_state_channel)
