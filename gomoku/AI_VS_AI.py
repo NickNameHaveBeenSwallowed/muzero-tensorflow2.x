@@ -1,4 +1,4 @@
-from convolution_network import conv_model
+from convolution_model import model
 from self_play import play_game
 
 import os
@@ -16,6 +16,6 @@ def self_play(model, num_simulations):
     print(winner)
 
 if __name__ == '__main__':
-    model = conv_model(OBSERVATION_SHAPE, HIDDEN_STATE_CHANNEL, NUM_CHESS)
-    model.load_weights("./model/gomoku_{}X{}".format(NUM_CHESS, NUM_CHESS))
-    self_play(model, NUM_SIMULATIONS)
+    gomoku_model = model(OBSERVATION_SHAPE, HIDDEN_STATE_CHANNEL, NUM_CHESS)
+    gomoku_model.load_weights("./model/gomoku_{}X{}".format(NUM_CHESS, NUM_CHESS))
+    self_play(gomoku_model, NUM_SIMULATIONS)
