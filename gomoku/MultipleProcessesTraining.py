@@ -7,7 +7,7 @@ import threading
 import datetime
 import time
 
-NUM_CHESS = 7
+NUM_CHESS = 8
 RENDER_BLOCK_SIZE = 50
 OBSERVATION_SHAPE = (NUM_CHESS, NUM_CHESS, 3)
 HIDDEN_STATE_CHANNEL = 32
