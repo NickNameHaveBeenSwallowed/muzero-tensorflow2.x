@@ -3,7 +3,7 @@ import tensorflow as tf
 import numpy as np
 
 num_blocks = 6
-l2 = 1e-4
+l2 = 1e-5
 
 class ResidualBlock(Model):
     def __init__(self, num_channels, strides=1):
@@ -18,7 +18,7 @@ class ResidualBlock(Model):
                                    kernel_regularizer=regularizers.l2(l2))
         self.bn2 = layers.BatchNormalization()
 
-    def call(self, inputs, training=None, mask=None):
+    def call(self, inputs):
         x = self.conv1(inputs)
         x = self.bn1(x)
         x = tf.nn.relu(x)
@@ -27,13 +27,30 @@ class ResidualBlock(Model):
         x = layers.add([inputs, x])
         return tf.nn.relu(x)
 
+class LinearRseidual(Model):
+    def __init__(self, units):
+        super(LinearRseidual, self).__init__()
+        self.linear1 = layers.Dense(units=units, use_bias=False, kernel_regularizer=regularizers.l2(l2))
+        self.bn1 = layers.BatchNormalization()
+        self.linear2 = layers.Dense(units=units, use_bias=False, kernel_regularizer=regularizers.l2(l2))
+        self.bn2 = layers.BatchNormalization()
+
+    def call(self, inputs):
+        x = self.linear1(inputs)
+        x = self.bn1(x)
+        x = tf.nn.relu(x)
+        x = self.linear2(x)
+        x = self.bn2(x)
+        x = layers.add([inputs, x])
+        return tf.nn.relu(x)
+
 class representation:
     def __init__(self, observation_shape, hidden_state_channel):
         observation = Input(shape=observation_shape)
-        x = layers.Conv2D(filters=hidden_state_channel, kernel_size=1, strides=1,
+        x = layers.Conv2D(filters=hidden_state_channel, kernel_size=3, strides=1,
                           padding="SAME", use_bias=False, kernel_regularizer=regularizers.l2(l2))(observation)
         x = layers.BatchNormalization()(x)
-
+        x = tf.nn.relu(x)
         for _ in range(num_blocks):
             x = ResidualBlock(hidden_state_channel)(x)
 
@@ -52,15 +69,22 @@ class dynamics:
         self.num_chess = num_chess
         hidden_state = Input(shape=hidden_state_shape)
         action = Input(shape=(num_chess, num_chess, 1))
-        x = layers.Conv2D(filters=hidden_state_channel, kernel_size=1, strides=1,
-                          padding="SAME", use_bias=False, kernel_regularizer=regularizers.l2(l2))(action)
+        # x = layers.Conv2D(filters=hidden_state_channel, kernel_size=3, strides=1,
+        #                   padding="SAME", use_bias=False, kernel_regularizer=regularizers.l2(l2))(action)
+        x = layers.Flatten()(action)
+        x = layers.Dense(units=num_chess * num_chess * hidden_state_channel, use_bias=False,
+                         kernel_regularizer=regularizers.l2(l2))(x)
         x = layers.BatchNormalization()(x)
+        x = tf.nn.relu(x)
 
+        for _ in range(num_blocks // 2):
+            x = LinearRseidual(units=num_chess * num_chess * hidden_state_channel)(x)
+
+        x = tf.reshape(x, shape=(-1, num_chess, num_chess, hidden_state_channel))
         x = layers.add([hidden_state, x])
 
-        for _ in range(num_blocks):
+        for _ in range(num_blocks // 2):
             x = ResidualBlock(hidden_state_channel)(x)
-
         next_hidden_state = x
 
         self.model = Model(inputs=[hidden_state, action], outputs=next_hidden_state)

@@ -44,7 +44,6 @@ class ReplayBuffer():
             t8.append([state_flip_4, np.reshape(action_flip_4, newshape=(action_flip_4.shape[0], action_flip_4.shape[1])), np.reshape(policy_flip_4, newshape=(policy_flip_4.shape[0] * policy_flip_4.shape[1])), winner_flip_4])
         return t1, t2, t3, t4, t5, t6, t7, t8
 
-
 class Trainer():
     def __init__(self, lr=2e-3, max_save_memory=int(1e6)):
         self.optimizer = optimizers.Adam(lr)

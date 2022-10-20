@@ -18,6 +18,7 @@ class play_game:
         # t = time.time()
         mcts = self.mcts(self.model, observation)
         visit_count = mcts.simulations(self.num_simulations)
+        # print(visit_count.values())
         for k, v in visit_count.items():
             if k not in self.valid_action:
                 visit_count[k] = 0
@@ -36,6 +37,7 @@ class play_game:
     def run(self):
         trajectory = []
         state, winner = self.env.reset()
+        # state = np.reshape(state, newshape=(self.num_chess, self.num_chess, 3))
         state = np.transpose(state, (1, 2, 0))
         if self.render:
             self.env.render()
@@ -44,10 +46,11 @@ class play_game:
             action_onehot = np.reshape([1 if i == action else 0 for i in range(self.num_chess ** 2)], newshape=(self.num_chess, self.num_chess, 1))
             trajectory.append([state, action_onehot, policy])
             state, winner = self.env.step(action)
+
             if self.render:
                 self.env.render()
+            # state = np.reshape(state, newshape=(self.num_chess, self.num_chess, 3))
             state = np.transpose(state, (1, 2, 0))
-
             if winner is not None:
                 break
 

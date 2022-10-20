@@ -1,10 +1,10 @@
-from convolution_model import model
+from resnet_model import model
 from self_play import play_game
 
 import os
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
-NUM_CHESS = 8
+NUM_CHESS = 9
 RENDER_BLOCK_SIZE = 50
 OBSERVATION_SHAPE = (NUM_CHESS, NUM_CHESS, 3)
 HIDDEN_STATE_CHANNEL = 32
